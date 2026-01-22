@@ -1,0 +1,128 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model testEvents {
+  id          Int    @id @default(autoincrement())
+  title       String
+  description String
+  city        String
+  state       String
+  zipcode     String
+  date        String
+}
+
+model content {
+  id          Int         @id @default(autoincrement())
+  title       String      @default("Title")
+  description String
+  createdby   Int?
+  createddate DateTime?   @default(now()) @db.Timestamp(6)
+  lastupdated DateTime?   @default(now()) @db.Timestamp(6)
+  address     String
+  city        String      @db.VarChar(255)
+  statecode   String      @db.VarChar(5)
+  zip         String      @db.VarChar(10)
+  image       String?
+  type        ContentType  @default(POST)
+  status      userstatus
+  discardflag discardflag
+  users       users?      @relation(fields: [createdby], references: [id], onUpdate: NoAction)
+  events      events[]
+  post        post[]
+}
+
+model events {
+  id            Int      @id @default(autoincrement())
+  contentid     Int?
+  scheduleddate DateTime @db.Timestamp(6)
+  content       content? @relation(fields: [contentid], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model feedback {
+  id          Int         @id @default(autoincrement())
+  createdby   Int?
+  subject     String
+  description String
+  createddate DateTime?   @default(now()) @db.Timestamp(6)
+  status      userstatus
+  discardflag discardflag
+  users       users?      @relation(fields: [createdby], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model post {
+  id        Int      @id @default(autoincrement())
+  contentid Int?
+  content   content? @relation(fields: [contentid], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model user_logs {
+  id          Int       @id @default(autoincrement())
+  userid      Int?
+  description String
+  createddate DateTime? @default(now()) @db.Timestamp(6)
+  users       users?    @relation(fields: [userid], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model users {
+  id             Int         @id @default(autoincrement())
+  firstname      String      @db.VarChar(255)
+  lastname       String      @db.VarChar(255)
+  email          String      @unique @db.VarChar(255)
+  hashedpassword String
+  zip            String      @db.VarChar(10)
+  username       String      @db.VarChar(30)
+  createddate    DateTime?   @default(now()) @db.Timestamp(6)
+  lastupdated    DateTime?   @default(now()) @db.Timestamp(6)
+  userrole       userrole
+  status         userstatus
+  discardflag    discardflag
+  content        content[]
+  feedback       feedback[]
+  user_logs      user_logs[]
+}
+
+enum discard_flag {
+  YES
+  NO
+}
+
+enum role {
+  VOLUNTEER
+  EXPERT
+  ORGANIZER
+  CONSULTANT
+}
+
+enum user_status {
+  ACTIVE
+  INACTIVE
+}
+
+enum discardflag {
+  YES
+  NO
+}
+
+enum userrole {
+  VOLUNTEER
+  EXPERT
+  ORGANIZER
+  CONSULTANT
+}
+
+enum userstatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum ContentType {
+  EVENT
+  POST
+}
