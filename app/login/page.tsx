@@ -2,17 +2,15 @@
 
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useActionState } from "react";
+import { Suspense } from "react";
+import { useFormState } from "react-dom";
 import { authenticate } from "../lib/action";
 import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
 
 export default function LoginPage() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
-  const [errorMessage, formAction] = useActionState(
-    authenticate,
-    undefined
-  );
+  const [errorMessage, formAction] = useFormState(authenticate, undefined);
   const router = useRouter();
 
   const handleCancel = () => {
