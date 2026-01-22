@@ -20,7 +20,6 @@ model testEvents {
 
 model content {
   id          Int         @id @default(autoincrement())
-  title       String      @default("Title")
   description String
   createdby   Int?
   createddate DateTime?   @default(now()) @db.Timestamp(6)
@@ -30,9 +29,10 @@ model content {
   statecode   String      @db.VarChar(5)
   zip         String      @db.VarChar(10)
   image       String?
-  type        ContentType  @default(POST)
   status      userstatus
   discardflag discardflag
+  type        ContentType @default(POST)
+  title       String      @default("Title")
   users       users?      @relation(fields: [createdby], references: [id], onUpdate: NoAction)
   events      events[]
   post        post[]
